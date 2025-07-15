@@ -2,6 +2,9 @@
 
 遥感数字图像处理教程：https://www.bilibili.com/video/BV1WJ411D7AG?t=195.6
 
+对应教材：https://etcnew.sdut.edu.cn/meol/common/script/preview/download_preview.jsp?fileid=3654454&resid=787291&lid=48026&preview=preview
+
+
 遥感图像处理的基本操作包括一系列预处理、增强、分析和分类等步骤，具体如下：
 
 ## 1. 数据预处理
