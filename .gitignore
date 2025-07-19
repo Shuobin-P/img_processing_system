@@ -42,6 +42,7 @@ venv/
 env/
 .venv/
 ENV/
+dip_env/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints

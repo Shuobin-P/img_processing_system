@@ -1,5 +1,11 @@
 # 开发一个系统（一般的图像的系统或者遥感图像的系统）
 
+数字图像处理教程：
+https://www.bilibili.com/video/BV1j7411i78H?t=19.3&p=4
+https://www.bilibili.com/video/BV1YA411K7pp?t=49.5&p=8
+https://www.bilibili.com/video/BV1Kh411X7Qv?t=25.9&p=2
+
+
 遥感数字图像处理教程：https://www.bilibili.com/video/BV1WJ411D7AG?t=195.6
 
 对应教材：https://etcnew.sdut.edu.cn/meol/common/script/preview/download_preview.jsp?fileid=3654454&resid=787291&lid=48026&preview=preview
