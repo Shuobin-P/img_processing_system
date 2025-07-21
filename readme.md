@@ -4,7 +4,7 @@
 https://www.bilibili.com/video/BV1j7411i78H?t=19.3&p=4
 https://www.bilibili.com/video/BV1YA411K7pp?t=49.5&p=8
 https://www.bilibili.com/video/BV1Kh411X7Qv?t=25.9&p=2
-
+https://www.bilibili.com/video/av1306278684?t=1877.8
 
 遥感数字图像处理教程：https://www.bilibili.com/video/BV1WJ411D7AG?t=195.6
 
@@ -16,7 +16,7 @@ https://www.bilibili.com/video/BV1Kh411X7Qv?t=25.9&p=2
 ## 1. 数据预处理
 这是遥感图像处理的第一步，确保数据质量和一致性。包括：  
 
-影像拼接：将多幅图像拼接成完整的覆盖区域。  
+影像拼接（镶嵌）：将多幅图像拼接成完整的覆盖区域。  
 
 裁剪与重采样：根据研究区域裁剪图像或对分辨率进行调整。
 
