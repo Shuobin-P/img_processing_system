@@ -43,6 +43,8 @@ env/
 .venv/
 ENV/
 dip_env/
+.conda
+
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints

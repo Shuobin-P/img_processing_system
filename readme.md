@@ -17,6 +17,8 @@ https://www.bilibili.com/video/av1306278684?t=1877.8
 这是遥感图像处理的第一步，确保数据质量和一致性。包括：  
 
 影像拼接（镶嵌）：将多幅图像拼接成完整的覆盖区域。  
+教程：https://pygis.io/docs/f_rs_mosaic.html  
+https://medium.com/@aarongrove/creating-image-mosaics-with-python-8e4c25dd9bf9
 
 裁剪与重采样：根据研究区域裁剪图像或对分辨率进行调整。
 
