@@ -16,11 +16,27 @@ https://www.bilibili.com/video/av1306278684?t=1877.8
 ## 1. 数据预处理
 这是遥感图像处理的第一步，确保数据质量和一致性。包括：  
 
-影像拼接（镶嵌）：将多幅图像拼接成完整的覆盖区域。  
-教程：https://pygis.io/docs/f_rs_mosaic.html  
-https://medium.com/@aarongrove/creating-image-mosaics-with-python-8e4c25dd9bf9
+### 影像拼接（镶嵌）：将多幅图像拼接成完整的覆盖区域。  
+教程：
+《Geoprocessing with Python》 第213页  
+https://pygis.io/docs/f_rs_mosaic.html  问题：用到的geowombat比较小众，github上只有188个star。  
+https://blog.csdn.net/m0_51301348/article/details/124460560（GDAL,raster）  
+https://www.cnblogs.com/RSran/p/17776513.html(GDAL)  
+https://juejin.cn/post/6892002048214138894（rasterio和GDAL）  
+https://zhuanlan.zhihu.com/p/139383690（GDAL）
 
-裁剪与重采样：根据研究区域裁剪图像或对分辨率进行调整。
+### 裁剪与重采样：根据研究区域裁剪图像或对分辨率进行调整。
+裁剪教程（用的技术：GDAL）：
+    https://zhuanlan.zhihu.com/p/397149374  
+    https://www.cnblogs.com/RSran/p/17631881.html  
+重采样教程（用的技术：GDAL，Pyresample【Pyresample使用了Xarray和Dask】）：  
+    《Geoprocessing with Python》 196页  
+    https://blog.csdn.net/zhanglingfeng1/article/details/129227390  
+    https://www.cnblogs.com/tangjielin/p/16599414.html  
+    https://zhuanlan.zhihu.com/p/587583231
+
+### 技术选择：GDAL。  
+原因：有基金会和社区支持，开发了25年的时间。github上已有5.4k star。
 
 ## 2. 图像增强（可不做）
 为了突出图像的某些特征，常用以下方法：  
