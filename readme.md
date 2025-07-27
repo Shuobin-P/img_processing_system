@@ -1,10 +1,10 @@
 # 开发一个系统（一般的图像的系统或者遥感图像的系统）
 
 数字图像处理教程：
-https://www.bilibili.com/video/BV1j7411i78H?t=19.3&p=4
-https://www.bilibili.com/video/BV1YA411K7pp?t=49.5&p=8
-https://www.bilibili.com/video/BV1Kh411X7Qv?t=25.9&p=2
-https://www.bilibili.com/video/av1306278684?t=1877.8
+https://www.bilibili.com/video/BV1j7411i78H?t=19.3&p=4  
+https://www.bilibili.com/video/BV1YA411K7pp?t=49.5&p=8  
+https://www.bilibili.com/video/BV1Kh411X7Qv?t=25.9&p=2  
+https://www.bilibili.com/video/av1306278684?t=1877.8  
 
 遥感数字图像处理教程：https://www.bilibili.com/video/BV1WJ411D7AG?t=195.6
 
