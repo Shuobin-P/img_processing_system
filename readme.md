@@ -26,6 +26,8 @@ https://juejin.cn/post/6892002048214138894（rasterio和GDAL）
 https://zhuanlan.zhihu.com/p/139383690（GDAL）
 
 ### 裁剪与重采样：根据研究区域裁剪图像或对分辨率进行调整。
+问题：如何用代码实现不规则裁剪（任意多边形）？
+
 裁剪教程（用的技术：GDAL）：
     https://zhuanlan.zhihu.com/p/397149374  
     https://www.cnblogs.com/RSran/p/17631881.html  
