@@ -56,3 +56,6 @@ Thumbs.db
 # Local env files
 .env
 .env.*
+
+# Remote Sensing Image Data
+osgeopy-data

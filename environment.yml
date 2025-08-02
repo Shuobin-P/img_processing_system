@@ -1,4 +1,3 @@
-name: D:\Project\VsCode\Python\img_processing_system\.conda
 channels:
   - conda-forge
   - defaults
