@@ -79,7 +79,6 @@ https://zhuanlan.zhihu.com/p/139383690（GDAL）
 
 ### 问题：Geoprocessing with Python P276讲的不清楚，只讲了一个大概。
 
-
 ### 问题：老师想要什么样子的效果？
 
 ## 6. 变化检测
