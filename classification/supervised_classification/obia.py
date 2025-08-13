@@ -14,7 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 
 # ------------------ Step 1: Compute segment features ------------------
-def segment_features(segment_pixels):
+def segment_features(segment_pixels): # 计算一个segment的像素的所有band的光谱数据
     features = []
     npixels, nbands = segment_pixels.shape # segment_pixels.shape的值是 (某个数字, 4)，某个数字即像素点的个数
     for b in range(nbands):
@@ -121,10 +121,11 @@ if __name__ == '__main__':
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = list(executor.map(process_segment, args_list, timeout=3600))
     print(f"Feature extraction done in {time.time() - start_time:.2f} seconds")
-
+    print(results)
     # ------------------ Step 6: Cleanup ------------------
-    object_ids, objects = zip(*results) # objects的元素是一个segment的若干特征，比如：光谱
-
+    object_ids, objects = zip(*results) # object_ids的元素是segment_id，objects的元素是一个segment的光谱特征
+    print(objects) # 一个object有24个数据，因为有4个band？每个band 6个数据？
+    exit()
     # 保存一下object_ids, objects，否则每次运行，都要等很久
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features.pkl", "wb") as f:
         pickle.dump((object_ids, objects), f)
@@ -138,7 +139,6 @@ if __name__ == '__main__':
     # 加载已有的object_ids, objects
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features.pkl", "rb") as f:
         object_ids, objects = pickle.load(f)
-
     # read shapefile to geopandas geodataframe
     gdf = gpd.read_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\truth_data_subset_utm12\truth_data_subset_utm12.shp')
     # get names of land cover classes/labels
@@ -174,6 +174,7 @@ if __name__ == '__main__':
     train_ds = ogr.Open(train_fn)
     lyr = train_ds.GetLayer()
 
+    print("Layer: ",lyr)
     # create a new raster layer in memory
     driver = gdal.GetDriverByName('MEM')
     target_ds = driver.Create('', naip_ds.RasterXSize, naip_ds.RasterYSize, 1, gdal.GDT_UInt16)
@@ -186,68 +187,65 @@ if __name__ == '__main__':
     # retrieve the rasterized data and print basic stats
     data = target_ds.GetRasterBand(1).ReadAsArray() # target_ds 即 train.shp中的数据???
     print('min', data.min(), 'max', data.max(), 'mean', data.mean())
-    print(np.unique(data)) # [0 1 2 3 4 5 6 7] TODO 为什么有8种数？
-    ground_truth = target_ds.GetRasterBand(1).ReadAsArray() # 唯一值：[0 1 2 3 4 5 6 7]
-    print(ground_truth.shape)
+    print(np.unique(data)) # [0 1 2 3 4 5 6 7] TODO 为什么有8种数？ 0代表未知分类？
+    ground_truth = target_ds.GetRasterBand(1).ReadAsArray() # ground_truth的唯一值：[0 1 2 3 4 5 6 7], ground_truth.shape: (2000, 5834)
+
     # Get segments representing each land cover classification type and ensure no segment represents more than one class.
-    classes = np.unique(ground_truth)[1:]
+    classes = np.unique(ground_truth)[1:] # [1 2 3 4 5 6 7]
     print('class values', classes)
     segments_per_class = {}
 
     for klass in classes: # classes中没有0
-        segments_of_class = segments[ground_truth == klass] 
-        print(segments_of_class)
-        print(np.unique(segments_of_class))
-        exit()
+        segments_of_class = segments[ground_truth == klass] # 找到属于klass的segments
         segments_per_class[klass] = set(segments_of_class)
         print("Training segments for class", klass, ":", len(segments_of_class))
 
     intersection = set()
-    accum = set()
+    accum = set() # 记录所有segment ID
 
     for class_segments in segments_per_class.values():
         intersection |= accum.intersection(class_segments)
-        accum |= class_segments
+        accum |= class_segments # 将class_segments加入到accum
     assert len(intersection) == 0, "Segment(s) represent multiple classes"
 
     # ------------------Classify the image-----------------#
     train_img = np.copy(segments)
-    threshold = train_img.max() + 1
-
-    for klass in classes:
+    threshold = train_img.max() + 1 # threshold=40151
+    for klass in classes: # [1 2 3 4 5 6 7]
         class_label = threshold + klass
         for segment_id in segments_per_class[klass]:
-            train_img[train_img == segment_id] = class_label
+            train_img[train_img == segment_id] = class_label # class_label min= 40152 ,max=40158
 
-    train_img[train_img <= threshold] = 0
-    train_img[train_img > threshold] -= threshold
-
+    train_img[train_img <= threshold] = 0 # TODO 不理解 train_img <= threshold 存在吗？
+    train_img[train_img > threshold] -= threshold # FIXME train_img赋值完，后面的代码就没用过了。
     training_objects = []
     training_labels = []
-
     for klass in classes:
+        print(objects) # objects中的一个object有24个数：4个band，每个band有6个数据
+        # segment_ids：[1  2  3 ... 40148 40149 40150]，objects与segment_ids等长
+        # i从0开始,到40149结束。v表示一个segment的光谱数据
+        # i=0, segment_ids[0] = 1
+        # object_id = [1, 2, 3, 4, ...,40150]
+        # 遍历所有segment ID，如果segment ID属于klass，则把它的光谱数据保存。
         class_train_object = [v for i, v in enumerate(objects) if segment_ids[i] in segments_per_class[klass]]
-        training_labels += [klass] * len(class_train_object)
-        training_objects += class_train_object
+        training_labels += [klass] * len(class_train_object) # [klass] * len(class_train_object) 会得到一个长度为len(class_train_object)的列表，值为klass
+        training_objects += class_train_object # training_objects[0]代表klass=1的光谱数据
         print('Training objects for class', klass, ':', len(class_train_object))
 
     classifier = RandomForestClassifier(n_jobs=-1)
-    classifier.fit(training_objects, training_labels)
+    classifier.fit(training_objects, training_labels) # training_objects是从objects得到的。
     print('Fitting Random Forest Classifier')
-    predicted = classifier.predict(objects)
+    predicted = classifier.predict(objects) # objects是从所有segments计算得到。前面用objects部分数据进行训练，这里用该模型预测所有的objects。这种做法如果只是为了生成最终分类图，则没有问题；但后续如果评估模型，就必须去除训练集，只预测模型没见过的测试集
     print('Predicting Classifications')
-
-    # Prediction操作挺耗时
-    clf = np.copy(segments)
-    for segment_id, klass in zip(segment_ids, predicted):
-        clf[clf == segment_id] = klass
-
+    clf = np.copy(segments) # clf.shape = (2000, 5834)
+    for segment_id, klass in zip(segment_ids, predicted): # segment_ids=[1, 2, 3,..., 40150]
+        clf[clf == segment_id] = klass # clf：即每个像素的分类（land cover）结果
+    
     print('Prediction applied to numpy array')
-
-    mask = np.sum(img, axis=2)
-    mask[mask > 0.0] = 1.0
-    mask[mask == 0.0] = -1.0
-    clf = np.multiply(clf, mask)
+    mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向
+    mask[mask > 0.0] = 1.0 # mask > 0.0表示该像素点有数据
+    mask[mask == 0.0] = -1.0 # mask==0，表示该像素点没有数据
+    clf = np.multiply(clf, mask) # 不是线代中的矩阵乘法
     clf[clf < 0] = -9999.0
 
     print('Saving classificaiton to raster with gdal')
