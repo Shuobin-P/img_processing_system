@@ -6,8 +6,6 @@
 # 对应视频地址：https://www.youtube.com/playlist?list=PLzHdTn7Pdxs6R6gf-0aLCqy8pL1GazPEe    
 
 # 问题：没有用到纹理和形状，只用到了光谱信息。
-# TODO 优化：对马路分类都没分好。答：优化不着急。思考方向： 训练数据太少？还是说随机森林参数不对？
-# 数据集不同类别的数据不平衡
 
 import numpy as np
 from osgeo import gdal,ogr
