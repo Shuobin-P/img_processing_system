@@ -1,4 +1,14 @@
-# TODO 问题：没有用到纹理和形状，只用到了光谱信息
+# 整体思路：将待分类的图像分为很多segment，然后得到segment的光谱特征，找到部分segment的所属land cover类别，
+# 通过上述segment和land cover，并利用随机森林算法训练模型，然后用随机森林预测所有segment的land cover类别。
+# 然后再得到图像中每个像素的所属land cover类别。
+
+# 教程地址：https://medium.com/data-science/object-based-land-cover-classification-with-python-cbe54e9c9e24  
+# 对应视频地址：https://www.youtube.com/playlist?list=PLzHdTn7Pdxs6R6gf-0aLCqy8pL1GazPEe    
+
+# 问题：没有用到纹理和形状，只用到了光谱信息。
+# TODO 优化：对马路分类都没分好。答：优化不着急。思考方向： 训练数据太少？还是说随机森林参数不对？
+# 数据集不同类别的数据不平衡
+
 import numpy as np
 from osgeo import gdal,ogr
 from skimage import exposure
@@ -53,9 +63,8 @@ if __name__ == '__main__':
     naip_fn = r"D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\m_4211161_se_12_1_20160624\m_4211161_se_12_1_20160624_subset.tif"
     driverTiff = gdal.GetDriverByName('GTiff')
     naip_ds = gdal.Open(naip_fn)
-    if naip_ds is None:
-        print("naip_ds is None")
-        exit()
+    assert naip_ds, "naip_ds is None"
+
     nbands = naip_ds.RasterCount
     band_data = []
     for i in range(1, nbands+1):
@@ -68,14 +77,15 @@ if __name__ == '__main__':
     # Segmentation
     # segments = slic(img, n_segments=500000, compactness=0.1)
     segments = slic(img, n_segments=50000, compactness=0.1)
+    print(segments.shape)
     """
     # 保存segments，以便后续调试程序
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments.pkl", "wb") as f:
         pickle.dump((segments), f)
-    """
     # 取出 segments
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments.pkl", "rb") as f:
         segments = pickle.load(f)
+    """
     # Save segments raster (optional)
     segments_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\segments_final.tif'
 
@@ -86,7 +96,7 @@ if __name__ == '__main__':
     segments_ds.GetRasterBand(1).WriteArray(segments)
     del segments_ds
     del naip_ds
-
+    
     segment_ids = np.unique(segments)
     # 暂时注释掉！！！
     """
@@ -185,9 +195,10 @@ if __name__ == '__main__':
     options = ['ATTRIBUTE=id']
     gdal.RasterizeLayer(target_ds, [1], lyr, options=options)
     # retrieve the rasterized data and print basic stats
-    data = target_ds.GetRasterBand(1).ReadAsArray() # target_ds 即 train.shp中的数据???
+    data = target_ds.GetRasterBand(1).ReadAsArray() # target_ds 即 train.shp中的数据
+    print(np.unique(data))
     print('min', data.min(), 'max', data.max(), 'mean', data.mean())
-    print(np.unique(data)) # [0 1 2 3 4 5 6 7] TODO 为什么有8种数？ 0代表未知分类？
+    print(np.unique(data)) # [0 1 2 3 4 5 6 7] 0代表未分类
     ground_truth = target_ds.GetRasterBand(1).ReadAsArray() # ground_truth的唯一值：[0 1 2 3 4 5 6 7], ground_truth.shape: (2000, 5834)
 
     # Get segments representing each land cover classification type and ensure no segment represents more than one class.
@@ -221,7 +232,7 @@ if __name__ == '__main__':
     training_objects = []
     training_labels = []
     for klass in classes:
-        print(objects) # objects中的一个object有24个数：4个band，每个band有6个数据
+        # objects中的一个object有24个数：4个band，每个band有6个数据
         # segment_ids：[1  2  3 ... 40148 40149 40150]，objects与segment_ids等长
         # i从0开始,到40149结束。v表示一个segment的光谱数据
         # i=0, segment_ids[0] = 1
@@ -231,8 +242,7 @@ if __name__ == '__main__':
         training_labels += [klass] * len(class_train_object) # [klass] * len(class_train_object) 会得到一个长度为len(class_train_object)的列表，值为klass
         training_objects += class_train_object # training_objects[0]代表klass=1的光谱数据
         print('Training objects for class', klass, ':', len(class_train_object))
-
-    classifier = RandomForestClassifier(n_jobs=-1)
+    classifier = RandomForestClassifier(n_jobs=-1, random_state=0)
     classifier.fit(training_objects, training_labels) # training_objects是从objects得到的。
     print('Fitting Random Forest Classifier')
     predicted = classifier.predict(objects) # objects是从所有segments计算得到。前面用objects部分数据进行训练，这里用该模型预测所有的objects。这种做法如果只是为了生成最终分类图，则没有问题；但后续如果评估模型，就必须去除训练集，只预测模型没见过的测试集
@@ -245,7 +255,7 @@ if __name__ == '__main__':
     mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向
     mask[mask > 0.0] = 1.0 # mask > 0.0表示该像素点有数据
     mask[mask == 0.0] = -1.0 # mask==0，表示该像素点没有数据
-    clf = np.multiply(clf, mask) # 不是线代中的矩阵乘法
+    clf = np.multiply(clf, mask) # 不是线代中的矩阵乘法，而是两个矩阵相同位置的两个元素相乘
     clf[clf < 0] = -9999.0
 
     print('Saving classificaiton to raster with gdal')
@@ -257,7 +267,7 @@ if __name__ == '__main__':
     clfds.GetRasterBand(1).WriteArray(clf)
     del clfds
     print('Done!')
-
+    exit()
     # -----------------预测准确度计算----------------
     driverTiff = gdal.GetDriverByName('GTiff')
     naip_ds = gdal.Open(naip_fn)
