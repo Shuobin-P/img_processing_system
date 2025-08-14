@@ -5,7 +5,7 @@
 # 教程地址：https://medium.com/data-science/object-based-land-cover-classification-with-python-cbe54e9c9e24  
 # 对应视频地址：https://www.youtube.com/playlist?list=PLzHdTn7Pdxs6R6gf-0aLCqy8pL1GazPEe    
 
-# 问题：没有用到纹理和形状，只用到了光谱信息。
+# 存在的问题：没有用到纹理和形状，只用到了光谱信息。
 
 import numpy as np
 from osgeo import gdal,ogr
@@ -21,7 +21,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 
-# ------------------ Step 1: Compute segment features ------------------
+# ------------------ Compute segment features ------------------
 def segment_features(segment_pixels): # 计算一个segment的像素的所有band的光谱数据
     features = []
     npixels, nbands = segment_pixels.shape # segment_pixels.shape的值是 (某个数字, 4)，某个数字即像素点的个数
@@ -34,7 +34,7 @@ def segment_features(segment_pixels): # 计算一个segment的像素的所有ban
         features += band_stats
     return features # 包含最小值，最大值，平均值，variance，skewness，kurtosis
 
-# ------------------ Step 2: Worker function ------------------
+# ------------------ Worker function ------------------
 def process_segment(args):
     segment_id, shared_names, shared_shapes, shared_dtypes = args
     # Access shared memory
@@ -54,7 +54,7 @@ def process_segment(args):
 
     return (segment_id, object_features)
 
-# ------------------ Step 3: Main ------------------
+# ------------------ Main ------------------#
 if __name__ == '__main__':
     # Load image
     # naip_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\m_4211161_se_12_1_20160624\m_4211161_se_12_1_20160624.tif'
@@ -265,7 +265,6 @@ if __name__ == '__main__':
     clfds.GetRasterBand(1).WriteArray(clf)
     del clfds
     print('Done!')
-    exit()
     # -----------------预测准确度计算----------------
     driverTiff = gdal.GetDriverByName('GTiff')
     naip_ds = gdal.Open(naip_fn)
