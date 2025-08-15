@@ -4,6 +4,9 @@
     https://blog.csdn.net/qq_31988139/article/details/133910317  
     https://patentimages.storage.googleapis.com/7a/86/7e/32c755861ca900/CN101930547A.pdf  
     http://ch.whu.edu.cn/cn/article/pdf/preview/2432.pdf  
+特征提取：
+    https://medium.com/@abishaajith95/image-feature-extraction-using-python-part-i-5b17099ca2f6
+
 """
 
 
@@ -64,7 +67,6 @@ def process_segment(args):
 
     return (segment_id, object_features)
 
-
 # ------------------ Main ------------------#
 if __name__ == '__main__':
     # Load image
@@ -91,7 +93,7 @@ if __name__ == '__main__':
 
     # 保存segments，以便后续调试程序
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v2.pkl", "wb") as f:
-        pickle.dump((segments), f)
+        pickle.dump(segments, f)
     """
     # 取出 segments
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v2.pkl", "rb") as f:
@@ -179,7 +181,7 @@ if __name__ == '__main__':
     print('gdf with ids\n', gdf.head())
     
     # split the truth data into training and test data sets and save each to a new shapefile
-    gdf_train = gdf.sample(frac=0.7)
+    gdf_train = gdf.sample(frac=0.7, random_state=0)
     gdf_test = gdf.drop(gdf_train.index)
     print('gdf shape', gdf.shape, 'training shape', gdf_train.shape, 'test', gdf_test.shape)
     gdf_train.to_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\train.shp')
@@ -253,32 +255,47 @@ if __name__ == '__main__':
         training_labels += [klass] * len(class_train_object) # [klass] * len(class_train_object) 会得到一个长度为len(class_train_object)的列表，值为klass
         training_objects += class_train_object # training_objects[0]代表klass=1的光谱数据
         print('Training objects for class', klass, ':', len(class_train_object))
+    """
     classifier = RandomForestClassifier(n_jobs=-1, random_state=0)
     classifier.fit(training_objects, training_labels) # training_objects是从objects得到的。
     print('Fitting Random Forest Classifier')
     predicted = classifier.predict(objects) # objects是从所有segments计算得到。前面用objects部分数据进行训练，这里用该模型预测所有的objects。这种做法如果只是为了生成最终分类图，则没有问题；但后续如果评估模型，就必须去除训练集，只预测模型没见过的测试集
     print('Predicting Classifications')
+    """
+
+    """
     # 保存模型
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model.pkl", 'wb') as f:  # 二进制写入模式
         pickle.dump(classifier, f)
-
     """
     # 加载模型
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model.pkl", "rb") as f:
+    print("load model ...")
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model.pkl", "rb") as f:
         classifier = pickle.load(f)
+    print("load model successfully")
     """
     # 保存预测结果
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v2.pkl", "wb") as f:
-        pickle.dump((predicted), f)
+        pickle.dump(predicted, f)
     """
     # 加载预测结果
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v2.pkl", "rb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v2.pkl", "rb") as f:
         predicted = pickle.load(f)
-    """
+    print("load predicted successfully")
     clf = np.copy(segments) # clf.shape = (2000, 5834)
-    for segment_id, klass in zip(segment_ids, predicted): # segment_ids=[1, 2, 3,..., 40150]
+    # 下面这个循环需要运行5min
+    """
+    for segment_id, klass in zip(segment_ids, predicted): # segment_ids=[1, 2, 3,..., 40150]，
+        # predicted与segment_ids一一对应
         clf[clf == segment_id] = klass # clf：即每个像素的分类（land cover）结果
-    
+    # 保存clf，便于后续调试
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf.pkl", "wb") as f:
+        pickle.dump(clf, f)
+    """
+
+    # 加载clf
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf.pkl", "rb") as f:
+        clf = pickle.load(f)
     print('Prediction applied to numpy array')
     mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向
     mask[mask > 0.0] = 1.0 # mask > 0.0表示该像素点有数据
@@ -312,12 +329,14 @@ if __name__ == '__main__':
 
     # test.shp中的数据，test.shp来自你在qgis取的所有点
     truth = target_ds.GetRasterBand(1).ReadAsArray()
-
+    print("truth:")
+    print(truth)
     pred_ds = gdal.Open(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\classified_v2.tif')
     pred = pred_ds.GetRasterBand(1).ReadAsArray()
 
     idx = np.nonzero(truth)
-
+    print("idx:")
+    print(idx)
     cm = metrics.confusion_matrix(truth[idx], pred[idx])
 
     # pixel accuracy
@@ -326,7 +345,66 @@ if __name__ == '__main__':
 
     print(cm.diagonal())
     print(cm.sum(axis=0))
-
-    accuracy = cm.diagonal() / cm.sum(axis=0) # 这是什么玩意儿？
-
+    accuracy = cm.diagonal() / cm.sum(axis=0) # 预测的准确率
     print(accuracy)
+
+    # ----------------用AUC的方法来评价模型-------------
+    # 对于train.shp中的数据，获得对应segment的光谱特征和纹理特征，以及对应的landcover分类，训练模型
+    # 对于test.shp中的数据，获得对应segment的光谱特征和纹理特征，以及对应的landcover分类
+    
+    # 注：好像下面计算特征和label的过程可以封装为函数！！！
+    # =================封装开始===================
+    test_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\test.shp'
+    test_ogr_ds = ogr.Open(test_fn)
+    test_lyr = test_ogr_ds.GetLayer()
+    driver = gdal.GetDriverByName('MEM')
+    test_raster_ds = driver.Create('', naip_ds.RasterXSize, naip_ds.RasterYSize, 1, gdal.GDT_UInt16)
+    test_raster_ds.SetGeoTransform(naip_ds.GetGeoTransform())
+    test_raster_ds.SetProjection(naip_ds.GetProjection())
+    # rasterize the training points
+    options = ['ATTRIBUTE=id']
+    gdal.RasterizeLayer(test_raster_ds, [1], test_lyr, options=options)
+    # retrieve the rasterized data and print basic stats
+    test_data = test_raster_ds.GetRasterBand(1).ReadAsArray() # test_ds 即 test.shp中的数据
+    print(np.unique(test_data))
+    print('min', test_data.min(), 'max', test_data.max(), 'mean', test_data.mean())
+    print(np.unique(test_data)) # [0 1 2 3 4 5 6 7] 0代表未分类
+    test_truth = test_raster_ds.GetRasterBand(1).ReadAsArray() # test_truth的唯一值：[0 1 2 3 4 5 6 7], test_truth.shape: (2000, 5834)
+
+    # Get segments representing each land cover classification type and ensure no segment represents more than one class.
+    classes = np.unique(test_truth)[1:] # [1 2 3 4 5 6 7]
+    print('class values', classes)
+    segments_per_class = {}
+
+    for klass in classes: # classes中没有0
+        segments_of_class = segments[test_truth == klass] # 找到属于klass的segments
+        segments_per_class[klass] = set(segments_of_class)
+        print("Test segments for class", klass, ":", len(segments_of_class))
+
+    intersection = set()
+    accum = set() # 记录所有segment ID
+
+    for class_segments in segments_per_class.values():
+        intersection |= accum.intersection(class_segments)
+        accum |= class_segments # 将class_segments加入到accum
+    assert len(intersection) == 0, "Segment(s) represent multiple classes"
+
+    # ------------------Classify the image-----------------#
+    test_objects = []
+    test_labels = []
+    for klass in classes:
+        # objects中的一个object有40个数：4个band，每个band有6个光谱特征，以及4个纹理特征
+        # segment_ids：[1  2  3 ... 40148 40149 40150]，objects与segment_ids等长
+        # i从0开始,到40149结束。v表示一个segment的光谱特征，光谱特征
+        # i=0, segment_ids[0] = 1
+        # object_id = [1, 2, 3, 4, ...,40150]
+
+        # 遍历所有segment ID，如果segment ID属于klass，则把它的光谱特征和纹理特征保存。
+        class_test_object = [v for i, v in enumerate(objects) if segment_ids[i] in segments_per_class[klass]]
+        test_labels += [klass] * len(class_test_object) # [klass] * len(class_train_object) 会得到一个长度为len(class_train_object)的列表，值为klass
+        test_objects += class_test_object # training_objects[0]代表klass=1的光谱数据
+    # =============封装结束线================
+    y_scores = classifier.predict_proba(test_objects)
+    from sklearn.metrics import roc_auc_score
+    auc = roc_auc_score(test_labels, y_scores, multi_class="ovo") 
+    print("auc: ",auc)

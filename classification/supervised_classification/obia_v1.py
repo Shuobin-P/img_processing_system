@@ -167,7 +167,7 @@ if __name__ == '__main__':
     print('gdf with ids\n', gdf.head())
     
     # split the truth data into training and test data sets and save each to a new shapefile
-    gdf_train = gdf.sample(frac=0.7)
+    gdf_train = gdf.sample(frac=0.7, random_state=0)
     gdf_test = gdf.drop(gdf_train.index)
     print('gdf shape', gdf.shape, 'training shape', gdf_train.shape, 'test', gdf_test.shape)
     gdf_train.to_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\train.shp')
