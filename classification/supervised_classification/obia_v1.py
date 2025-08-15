@@ -20,6 +20,7 @@ import geopandas as gpd
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
+from obia_v2 import get_shapefile_objects_features_and_labels
 
 # ------------------ Compute segment features ------------------
 def segment_features(segment_pixels): # 计算一个segment的像素的所有band的光谱数据
@@ -74,16 +75,16 @@ if __name__ == '__main__':
     img = exposure.rescale_intensity(band_data)
     # Segmentation
     # segments = slic(img, n_segments=500000, compactness=0.1)
+    """
     segments = slic(img, n_segments=50000, compactness=0.1)
     print(segments.shape)
-    """
     # 保存segments，以便后续调试程序
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments.pkl", "wb") as f:
         pickle.dump((segments), f)
+    """
     # 取出 segments
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments.pkl", "rb") as f:
         segments = pickle.load(f)
-    """
     # Save segments raster (optional)
     segments_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\segments_final.tif'
 
@@ -98,7 +99,7 @@ if __name__ == '__main__':
     segment_ids = np.unique(segments)
     # 暂时注释掉！！！
     """
-    # ------------------ Step 4: Setup shared memory ------------------
+    # ------------------ Setup shared memory ------------------
     shm_img = shared_memory.SharedMemory(create=True, size=img.nbytes)
     shared_img = np.ndarray(img.shape, dtype=img.dtype, buffer=shm_img.buf) 
     shared_img[:] = img[:]
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     }
 
    
-    # ------------------ Step 5: Parallel execution ------------------
+    # ------------------ Parallel execution ------------------
     segment_ids = np.unique(segments)
     print(f"Processing {len(segment_ids)} segments in parallel...")
     start_time = time.time()
@@ -240,15 +241,41 @@ if __name__ == '__main__':
         training_labels += [klass] * len(class_train_object) # [klass] * len(class_train_object) 会得到一个长度为len(class_train_object)的列表，值为klass
         training_objects += class_train_object # training_objects[0]代表klass=1的光谱数据
         print('Training objects for class', klass, ':', len(class_train_object))
+    """
     classifier = RandomForestClassifier(n_jobs=-1, random_state=0)
     classifier.fit(training_objects, training_labels) # training_objects是从objects得到的。
     print('Fitting Random Forest Classifier')
     predicted = classifier.predict(objects) # objects是从所有segments计算得到。前面用objects部分数据进行训练，这里用该模型预测所有的objects。这种做法如果只是为了生成最终分类图，则没有问题；但后续如果评估模型，就必须去除训练集，只预测模型没见过的测试集
+    # 保存模型
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model_v1.pkl", 'wb') as f:  # 二进制写入模式
+        pickle.dump(classifier, f)
+    """
+    # 加载模型
+    print("load model ...")
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model_v1.pkl", "rb") as f:
+        classifier = pickle.load(f)
+    print("load model successfully")
     print('Predicting Classifications')
+    """
+    # 保存预测结果
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v1.pkl", "wb") as f:
+        pickle.dump(predicted, f)
+    """
+    # 加载预测结果
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v1.pkl", "rb") as f:
+        predicted = pickle.load(f)
+    print("load predicted successfully")
+    """
     clf = np.copy(segments) # clf.shape = (2000, 5834)
     for segment_id, klass in zip(segment_ids, predicted): # segment_ids=[1, 2, 3,..., 40150]
         clf[clf == segment_id] = klass # clf：即每个像素的分类（land cover）结果
-    
+    # 保存clf，便于后续调试
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v1.pkl", "wb") as f:
+        pickle.dump(clf, f)
+    """
+    # 加载clf
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v1.pkl", "rb") as f:
+        clf = pickle.load(f)
     print('Prediction applied to numpy array')
     mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向
     mask[mask > 0.0] = 1.0 # mask > 0.0表示该像素点有数据
@@ -257,7 +284,7 @@ if __name__ == '__main__':
     clf[clf < 0] = -9999.0
 
     print('Saving classificaiton to raster with gdal')
-    clfds = driverTiff.Create(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\classified.tif', naip_ds.RasterXSize, naip_ds.RasterYSize,
+    clfds = driverTiff.Create(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\classified_v1.tif', naip_ds.RasterXSize, naip_ds.RasterYSize,
                             1, gdal.GDT_Float32)
     clfds.SetGeoTransform(naip_ds.GetGeoTransform())
     clfds.SetProjection(naip_ds.GetProjection())
@@ -281,7 +308,7 @@ if __name__ == '__main__':
 
     truth = target_ds.GetRasterBand(1).ReadAsArray()
 
-    pred_ds = gdal.Open(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\classified.tif')
+    pred_ds = gdal.Open(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\classified_v1.tif')
     pred = pred_ds.GetRasterBand(1).ReadAsArray()
 
     idx = np.nonzero(truth)
@@ -296,3 +323,10 @@ if __name__ == '__main__':
 
     accuracy = cm.diagonal() / cm.sum(axis=0)
     print(accuracy)
+
+    # ----------------用AUC的方法来评价模型-------------
+    test_objects, test_labels = get_shapefile_objects_features_and_labels(naip_ds, r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\test.shp', objects, segment_ids, segments)
+    y_scores = classifier.predict_proba(test_objects)
+    from sklearn.metrics import roc_auc_score
+    auc = roc_auc_score(test_labels, y_scores, multi_class="ovo") 
+    print("auc: ",auc) # 0.96
