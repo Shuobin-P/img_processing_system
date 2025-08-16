@@ -87,11 +87,11 @@ if __name__ == '__main__':
     segments = slic(img, n_segments=50000, compactness=0.1)
     print(segments.shape)
     # 保存segments，以便后续调试程序
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments.pkl", "wb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v1.pkl", "wb") as f:
         pickle.dump((segments), f)
     """
     # 取出 segments
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments.pkl", "rb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v1.pkl", "rb") as f:
         segments = pickle.load(f)
     # Save segments raster (optional)
     segments_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\segments_final.tif'
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     print(objects) # 一个object有24个数据，因为有4个band？每个band 6个数据？
     exit()
     # 保存一下object_ids, objects，否则每次运行，都要等很久
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features.pkl", "wb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features_v1.pkl", "wb") as f:
         pickle.dump((object_ids, objects), f)
 
     shm_img.close()
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     print("Parallization Finished.")
     """
     # 加载已有的object_ids, objects
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features.pkl", "rb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features_v1.pkl", "rb") as f:
         object_ids, objects = pickle.load(f)
     # read shapefile to geopandas geodataframe
     gdf = gpd.read_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\truth_data_subset_utm12\truth_data_subset_utm12.shp')

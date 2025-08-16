@@ -75,7 +75,7 @@ def process_segment(args):
     segments_np = np.ndarray(shared_shapes['segments'], dtype=shared_dtypes['segments'], buffer=existing_segments.buf)
 
     # Select pixels for this segment and compute stats
-    # (segments_np == segment_id).shape = (2000, 5834)，segments_np == segment_id的值为True或False，即表示某个位置处的像素是否属于指定segment。问题：能否通过segments_np == segment_id来计算该segment的最小外接矩形的长宽比
+    # (segments_np == segment_id).shape = (2000, 5834)，segments_np == segment_id的值为True或False，即表示某个位置处的像素是否属于指定segment。
     # segment_pixels.shape = (x,4), x为像素点的个数
     mask = (segments_np == segment_id)
     segment_pixels = img_np[mask] # 得到图片中都属于同一个segment_id的像素。img_np.shape = (2000, 5834, 4) 2000是y轴方向的长度，5834是x轴
