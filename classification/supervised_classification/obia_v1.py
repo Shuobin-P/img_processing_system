@@ -87,11 +87,11 @@ if __name__ == '__main__':
     segments = slic(img, n_segments=50000, compactness=0.1)
     print(segments.shape)
     # 保存segments，以便后续调试程序
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v1.pkl", "wb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segments_v1.pkl", "wb") as f:
         pickle.dump((segments), f)
     """
     # 取出 segments
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v1.pkl", "rb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segments_v1.pkl", "rb") as f:
         segments = pickle.load(f)
     # Save segments raster (optional)
     segments_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\segments_final.tif'
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     print(objects) # 一个object有24个数据，因为有4个band？每个band 6个数据？
     exit()
     # 保存一下object_ids, objects，否则每次运行，都要等很久
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features_v1.pkl", "wb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segment_features_v1.pkl", "wb") as f:
         pickle.dump((object_ids, objects), f)
 
     shm_img.close()
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     print("Parallization Finished.")
     """
     # 加载已有的object_ids, objects
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features_v1.pkl", "rb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segment_features_v1.pkl", "rb") as f:
         object_ids, objects = pickle.load(f)
     # read shapefile to geopandas geodataframe
     gdf = gpd.read_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\truth_data_subset_utm12\truth_data_subset_utm12.shp')
@@ -255,22 +255,22 @@ if __name__ == '__main__':
     print('Fitting Random Forest Classifier')
     predicted = classifier.predict(objects) # objects是从所有segments计算得到。前面用objects部分数据进行训练，这里用该模型预测所有的objects。这种做法如果只是为了生成最终分类图，则没有问题；但后续如果评估模型，就必须去除训练集，只预测模型没见过的测试集
     # 保存模型
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model_v1.pkl", 'wb') as f:  # 二进制写入模式
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\random_forest_model_v1.pkl", 'wb') as f:  # 二进制写入模式
         pickle.dump(classifier, f)
     """
     # 加载模型
     print("load model ...")
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model_v1.pkl", "rb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\random_forest_model_v1.pkl", "rb") as f:
         classifier = pickle.load(f)
     print("load model successfully")
     print('Predicting Classifications')
     """
     # 保存预测结果
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v1.pkl", "wb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\predicted_v1.pkl", "wb") as f:
         pickle.dump(predicted, f)
     """
     # 加载预测结果
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v1.pkl", "rb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\predicted_v1.pkl", "rb") as f:
         predicted = pickle.load(f)
     print("load predicted successfully")
     """
@@ -278,11 +278,11 @@ if __name__ == '__main__':
     for segment_id, klass in zip(segment_ids, predicted): # segment_ids=[1, 2, 3,..., 40150]
         clf[clf == segment_id] = klass # clf：即每个像素的分类（land cover）结果
     # 保存clf，便于后续调试
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v1.pkl", "wb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\clf_v1.pkl", "wb") as f:
         pickle.dump(clf, f)
     """
     # 加载clf
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v1.pkl", "rb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\clf_v1.pkl", "rb") as f:
         clf = pickle.load(f)
     print('Prediction applied to numpy array')
     mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向

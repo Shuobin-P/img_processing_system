@@ -168,11 +168,11 @@ if __name__ == '__main__':
     print(segments.shape)
 
     # 保存segments，以便后续调试程序
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v2.pkl", "wb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segments_v2.pkl", "wb") as f:
         pickle.dump(segments, f)
     """
     # 取出 segments
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segments_v2.pkl", "rb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segments_v2.pkl", "rb") as f:
         segments = pickle.load(f)
     # Save segments raster (optional)
     segments_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\segments_final_v2.tif'
@@ -225,7 +225,7 @@ if __name__ == '__main__':
     print(objects)
 
     # 保存一下object_ids, objects，否则每次运行，都要等很久
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features_v2.pkl", "wb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segment_features_v2.pkl", "wb") as f:
         pickle.dump((object_ids, objects), f)
 
     shm_img.close()
@@ -235,7 +235,7 @@ if __name__ == '__main__':
     print("Parallization Finished.")
     """
     # 加载已有的object_ids, objects
-    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features_v2.pkl", "rb") as f:
+    with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segment_features_v2.pkl", "rb") as f:
         object_ids, objects = pickle.load(f)
     """
     # read shapefile to geopandas geodataframe
@@ -278,22 +278,22 @@ if __name__ == '__main__':
     print('Predicting Classifications')
 
     # 保存模型
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model_v2.pkl", 'wb') as f:  # 二进制写入模式
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\random_forest_model_v2.pkl", 'wb') as f:  # 二进制写入模式
         pickle.dump(classifier, f)
     """
     # 加载模型
     print("load model ...")
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model_v2.pkl", "rb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\random_forest_model_v2.pkl", "rb") as f:
         classifier = pickle.load(f)
     print("load model successfully")
     """
 
     # 保存预测结果
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v2.pkl", "wb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\predicted_v2.pkl", "wb") as f:
         pickle.dump(predicted, f)
     """
     # 加载预测结果
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v2.pkl", "rb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\predicted_v2.pkl", "rb") as f:
         predicted = pickle.load(f)
     print("load predicted successfully")
     """
@@ -303,11 +303,11 @@ if __name__ == '__main__':
         # predicted与segment_ids一一对应
         clf[clf == segment_id] = klass # clf：即每个像素的分类（land cover）结果
     # 保存clf，便于后续调试
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v2.pkl", "wb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\clf_v2.pkl", "wb") as f:
         pickle.dump(clf, f)
     """
     # 加载clf
-    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v2.pkl", "rb") as f:
+    with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\clf_v2.pkl", "rb") as f:
         clf = pickle.load(f)
     """
     print('Prediction applied to numpy array')
