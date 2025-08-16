@@ -2,12 +2,12 @@
 设计思路：通过考虑形状, 纹理, 从而优化只考虑光谱特征的obia_v1.py
 模型运行结果：
     混淆矩阵预测准确率：
-        考虑光谱,纹理（contrast, dissimilarity, homogeneity, energy），形状（长宽比）：[1.  0.92857143  0.4   0.5    0.7   0.72727273  0.875 ]
-        考虑光谱，形状（长宽比） [1.  0.92857143  0.44444444  0.66666667  0.63636364  0.8  0.85714286]
+        考虑光谱,纹理模型:（contrast, dissimilarity, homogeneity, energy），形状（长宽比）：[1.  0.92857143  0.4   0.5    0.7   0.72727273  0.875 ]
+        考虑光谱，形状（长宽比）模型： [1.  0.92857143  0.44444444  0.66666667  0.63636364  0.8  0.85714286]，该v2模型预测的准确率低于v1模型。
     随机森林模型AUC得分:
         考虑光谱,纹理(contrast, dissimilarity, homogeneity, energy)，形状(长宽比)得分: 0.951
         考虑光谱,形状(长宽比)得分: 0.959        
-
+    
 特征选取分析：
      形状：
         长宽比: 可以用来区分公路的segment与其他segment
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     del naip_ds
     
     segment_ids = np.unique(segments)
-
+    """
     # 如果已经计算过，可以注释掉！！！
     # ------------------ Step 4: Setup shared memory ------------------
     shm_img = shared_memory.SharedMemory(create=True, size=img.nbytes)
@@ -227,7 +227,7 @@ if __name__ == '__main__':
     # 保存一下object_ids, objects，否则每次运行，都要等很久
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segment_features_v2.pkl", "wb") as f:
         pickle.dump((object_ids, objects), f)
-
+    
     shm_img.close()
     shm_img.unlink()
     shm_segments.close()
@@ -237,7 +237,6 @@ if __name__ == '__main__':
     # 加载已有的object_ids, objects
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segment_features_v2.pkl", "rb") as f:
         object_ids, objects = pickle.load(f)
-    """
     # read shapefile to geopandas geodataframe
     gdf = gpd.read_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\truth_data_subset_utm12\truth_data_subset_utm12.shp')
     # get names of land cover classes/labels
@@ -267,7 +266,8 @@ if __name__ == '__main__':
     #----------------- Rasterize Training Data---------------#
     # open NAIP image as a gdal raster dataset
     naip_ds = gdal.Open(naip_fn)
-
+    """
+    # 若用之前已经训练过的模型，直接加载即可
     # open the points file to use for training data
     training_objects, training_labels = get_shapefile_objects_features_and_labels(naip_ds, r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\train.shp',objects, segment_ids, segments)
 
@@ -287,7 +287,6 @@ if __name__ == '__main__':
         classifier = pickle.load(f)
     print("load model successfully")
     """
-
     # 保存预测结果
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\predicted_v2.pkl", "wb") as f:
         pickle.dump(predicted, f)
@@ -296,8 +295,8 @@ if __name__ == '__main__':
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\predicted_v2.pkl", "rb") as f:
         predicted = pickle.load(f)
     print("load predicted successfully")
-    """
     clf = np.copy(segments) # clf.shape = (2000, 5834)
+    """
     # 下面这个循环需要运行5min
     for segment_id, klass in zip(segment_ids, predicted): # segment_ids=[1, 2, 3,..., 40150]，
         # predicted与segment_ids一一对应
@@ -306,10 +305,10 @@ if __name__ == '__main__':
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\clf_v2.pkl", "wb") as f:
         pickle.dump(clf, f)
     """
+
     # 加载clf
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\clf_v2.pkl", "rb") as f:
         clf = pickle.load(f)
-    """
     print('Prediction applied to numpy array')
     mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向
     mask[mask > 0.0] = 1.0 # mask > 0.0表示该像素点有数据
@@ -343,22 +342,26 @@ if __name__ == '__main__':
 
     # test.shp中的数据，test.shp来自你在qgis取的所有点
     truth = target_ds.GetRasterBand(1).ReadAsArray()
-    print("truth:")
-    print(truth)
+    print("Test truth Data Shape=", truth.shape) # (2000, 5834)
+    print("Unique Test truth Data= ", np.unique(truth)) # [0 1 2 3 4 5 6 7]
+    
     pred_ds = gdal.Open(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\classified_v2.tif')
     pred = pred_ds.GetRasterBand(1).ReadAsArray()
 
     idx = np.nonzero(truth)
-    cm = metrics.confusion_matrix(truth[idx], pred[idx])
-
+    cm = metrics.confusion_matrix(truth[idx], pred[idx]) # test.shp中数据标签vs模型预测的结果
     # pixel accuracy
     print("Confusion Matrix: ")
     print(cm)
-
     print(cm.diagonal())
     print(cm.sum(axis=0))
     accuracy = cm.diagonal() / cm.sum(axis=0) # 预测的准确率
     print("accuracy: \n", accuracy)
+
+    from sklearn.metrics import classification_report
+    print("======classification_report starts=====")
+    print(classification_report(truth[idx], pred[idx]))
+    print("======classification_report end======")
 
     # ----------------用AUC的方法来评价模型-------------
     # 对于train.shp中的数据，获得对应segment的光谱特征和纹理特征，以及对应的landcover分类，训练模型

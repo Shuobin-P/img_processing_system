@@ -325,12 +325,16 @@ if __name__ == '__main__':
 
     # pixel accuracy
     print(cm)
-
     print(cm.diagonal())
     print(cm.sum(axis=0))
 
     accuracy = cm.diagonal() / cm.sum(axis=0)
     print("accuracy=", accuracy) 
+
+    from sklearn.metrics import classification_report
+    print("======classification_report starts=====")
+    print(classification_report(truth[idx], pred[idx]))
+    print("======classification_report end======")
 
     # ----------------用AUC的方法来评价模型-------------
     test_objects, test_labels = get_shapefile_objects_features_and_labels(naip_ds, r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\test.shp', objects, segment_ids, segments)
