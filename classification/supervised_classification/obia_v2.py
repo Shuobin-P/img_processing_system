@@ -1,12 +1,23 @@
 """
-通过考虑形状，纹理，从而优化只考虑光谱特征的obia_v1.py
+设计思路：通过考虑形状, 纹理, 从而优化只考虑光谱特征的obia_v1.py
+模型运行结果：
+    混淆矩阵预测准确率：
+        考虑光谱,纹理（contrast, dissimilarity, homogeneity, energy），形状（长宽比）：[1.  0.92857143  0.4   0.5    0.7   0.72727273  0.875 ]
+        考虑光谱，形状（长宽比） [1.  0.92857143  0.44444444  0.66666667  0.63636364  0.8  0.85714286]
+    随机森林模型AUC得分:
+        考虑光谱,纹理(contrast, dissimilarity, homogeneity, energy)，形状(长宽比)得分: 0.951
+        考虑光谱,形状(长宽比)得分: 0.959        
+
+特征选取分析：
+     形状：
+        长宽比: 可以用来区分公路的segment与其他segment
+
 介绍形状，纹理的文章：
     https://blog.csdn.net/qq_31988139/article/details/133910317  
     https://patentimages.storage.googleapis.com/7a/86/7e/32c755861ca900/CN101930547A.pdf  
     http://ch.whu.edu.cn/cn/article/pdf/preview/2432.pdf  
 
-    形状：长宽比 可以用来区分公路与其他
-特征提取：
+    特征提取：
     https://medium.com/@abishaajith95/image-feature-extraction-using-python-part-i-5b17099ca2f6
 
 """
@@ -40,6 +51,7 @@ def segment_features(segment_pixels): # 计算一个segment的像素的所有ban
             # in this case the variance = nan, change it 0.0
             band_stats[3] = 0.0
         # 计算每个波段的纹理特征
+        """
         glcm = graycomatrix([segment_pixels[:,b]], distances=[1], angles=[0], levels=256, symmetric=True, normed=True)
         contrast = graycoprops(glcm, prop='contrast')
         dissimilarity = graycoprops(glcm, prop='dissimilarity')
@@ -47,6 +59,8 @@ def segment_features(segment_pixels): # 计算一个segment的像素的所有ban
         energy = graycoprops(glcm, prop='energy')
         texture_stats = [contrast[0, 0], dissimilarity[0, 0], homogeneity[0, 0], energy[0, 0]]
         features += band_stats + texture_stats # band_stats包含最小值，最大值，平均值，variance，skewness，kurtosis; texture_stats 包含contrast, dissimilarity, homogeneity, energy
+        """
+        features += band_stats
     return features 
 
 
@@ -63,9 +77,15 @@ def process_segment(args):
     # Select pixels for this segment and compute stats
     # (segments_np == segment_id).shape = (2000, 5834)，segments_np == segment_id的值为True或False，即表示某个位置处的像素是否属于指定segment。问题：能否通过segments_np == segment_id来计算该segment的最小外接矩形的长宽比
     # segment_pixels.shape = (x,4), x为像素点的个数
-    segment_pixels = img_np[segments_np == segment_id] # 得到图片中都属于同一个segment_id的像素。img_np.shape = (2000, 5834, 4) 2000是y轴方向的长度，5834是x轴
+    mask = (segments_np == segment_id)
+    segment_pixels = img_np[mask] # 得到图片中都属于同一个segment_id的像素。img_np.shape = (2000, 5834, 4) 2000是y轴方向的长度，5834是x轴
     object_features = segment_features(segment_pixels)
-
+    # 考虑segment的形状：segment最小外接矩形的长宽比
+    binary_img = np.array(mask).astype(np.uint8) * 255
+    contours, _ = cv2.findContours(binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    rect = cv2.minAreaRect(contours[0])
+    ratio = rect[1][1] / rect[1][0] # 长：宽
+    object_features.append(ratio)
     # Cleanup (close but don't unlink)
     existing_img.close()
     existing_segments.close()
@@ -166,6 +186,7 @@ if __name__ == '__main__':
     del naip_ds
     
     segment_ids = np.unique(segments)
+
     # 如果已经计算过，可以注释掉！！！
     # ------------------ Step 4: Setup shared memory ------------------
     shm_img = shared_memory.SharedMemory(create=True, size=img.nbytes)
@@ -197,8 +218,6 @@ if __name__ == '__main__':
     args_list = [(segment_id, shared_names, shared_shapes, shared_dtypes) for segment_id in segment_ids]
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = list(executor.map(process_segment, args_list, timeout=3600))
-    exit()
-    """
     print(f"Feature extraction done in {time.time() - start_time:.2f} seconds")
     print(results)
     # ------------------ Step 6: Cleanup ------------------
@@ -218,6 +237,7 @@ if __name__ == '__main__':
     # 加载已有的object_ids, objects
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\segment_features_v2.pkl", "rb") as f:
         object_ids, objects = pickle.load(f)
+    """
     # read shapefile to geopandas geodataframe
     gdf = gpd.read_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\truth_data_subset_utm12\truth_data_subset_utm12.shp')
     # get names of land cover classes/labels
@@ -251,15 +271,12 @@ if __name__ == '__main__':
     # open the points file to use for training data
     training_objects, training_labels = get_shapefile_objects_features_and_labels(naip_ds, r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\train.shp',objects, segment_ids, segments)
 
-    """
     classifier = RandomForestClassifier(n_jobs=-1, random_state=0)
     classifier.fit(training_objects, training_labels) # training_objects是从objects得到的。
     print('Fitting Random Forest Classifier')
     predicted = classifier.predict(objects) # objects是从所有segments计算得到。前面用objects部分数据进行训练，这里用该模型预测所有的objects。这种做法如果只是为了生成最终分类图，则没有问题；但后续如果评估模型，就必须去除训练集，只预测模型没见过的测试集
     print('Predicting Classifications')
-    """
 
-    """
     # 保存模型
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\random_forest_model_v2.pkl", 'wb') as f:  # 二进制写入模式
         pickle.dump(classifier, f)
@@ -270,6 +287,7 @@ if __name__ == '__main__':
         classifier = pickle.load(f)
     print("load model successfully")
     """
+
     # 保存预测结果
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v2.pkl", "wb") as f:
         pickle.dump(predicted, f)
@@ -278,9 +296,9 @@ if __name__ == '__main__':
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\predicted_v2.pkl", "rb") as f:
         predicted = pickle.load(f)
     print("load predicted successfully")
+    """
     clf = np.copy(segments) # clf.shape = (2000, 5834)
     # 下面这个循环需要运行5min
-    """
     for segment_id, klass in zip(segment_ids, predicted): # segment_ids=[1, 2, 3,..., 40150]，
         # predicted与segment_ids一一对应
         clf[clf == segment_id] = klass # clf：即每个像素的分类（land cover）结果
@@ -288,10 +306,10 @@ if __name__ == '__main__':
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v2.pkl", "wb") as f:
         pickle.dump(clf, f)
     """
-
     # 加载clf
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\clf_v2.pkl", "rb") as f:
         clf = pickle.load(f)
+    """
     print('Prediction applied to numpy array')
     mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向
     mask[mask > 0.0] = 1.0 # mask > 0.0表示该像素点有数据
@@ -351,4 +369,4 @@ if __name__ == '__main__':
     y_scores = classifier.predict_proba(test_objects)
     from sklearn.metrics import roc_auc_score
     auc = roc_auc_score(test_labels, y_scores, multi_class="ovo") 
-    print("auc: ",auc) # 0.95
+    print("auc: ",auc) 

@@ -1,12 +1,20 @@
-# 整体思路：将待分类的图像分为很多segment，然后得到segment的光谱特征，找到部分segment的所属land cover类别，
-# 通过上述segment和land cover，并利用随机森林算法训练模型，然后用随机森林预测所有segment的land cover类别。
-# 然后再得到图像中每个像素的所属land cover类别。
+"""
+整体思路:
+    将待分类的图像分为很多segment，然后得到segment的光谱特征，找到train.shp中点的segment的光谱特征和land cover类别，
+    并利用随机森林算法训练模型，然后用随机森林预测所有segment的land cover类别。然后再得到图像中每个像素的所属land cover类别。
 
-# 教程地址：https://medium.com/data-science/object-based-land-cover-classification-with-python-cbe54e9c9e24  
-# 对应视频地址：https://www.youtube.com/playlist?list=PLzHdTn7Pdxs6R6gf-0aLCqy8pL1GazPEe    
+模型运行结果：
+    混淆矩阵预测准确率：
+        [1.   0.92857143 0.44444444 0.83333333 0.63636364 0.81818182  1. ]
+    随机森林模型AUC得分:
+        0.956
+教程地址:
+    https://medium.com/data-science/object-based-land-cover-classification-with-python-cbe54e9c9e24  
+对应视频地址:
+    https://www.youtube.com/playlist?list=PLzHdTn7Pdxs6R6gf-0aLCqy8pL1GazPEe    
 
-# 存在的问题：没有用到纹理和形状，只用到了光谱信息。
-
+存在的问题：没有用到纹理和形状，只用到了光谱信息。
+"""
 import numpy as np
 from osgeo import gdal,ogr
 from skimage import exposure
@@ -322,11 +330,11 @@ if __name__ == '__main__':
     print(cm.sum(axis=0))
 
     accuracy = cm.diagonal() / cm.sum(axis=0)
-    print(accuracy)
+    print("accuracy=", accuracy) 
 
     # ----------------用AUC的方法来评价模型-------------
     test_objects, test_labels = get_shapefile_objects_features_and_labels(naip_ds, r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\test.shp', objects, segment_ids, segments)
     y_scores = classifier.predict_proba(test_objects)
     from sklearn.metrics import roc_auc_score
     auc = roc_auc_score(test_labels, y_scores, multi_class="ovo") 
-    print("auc: ",auc) # 0.96
+    print("auc: ",auc) 
