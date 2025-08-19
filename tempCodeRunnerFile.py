@@ -1,7 +1,3 @@
-from multiprocessing import Pool
-
-def f(x):
-    return x*x
-
-with Pool(5) as p:
-    print(p.map(f, [1, 2, 3]))
+import torch
+x = torch.rand(5, 3)
+print(x)

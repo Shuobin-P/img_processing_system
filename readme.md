@@ -77,7 +77,7 @@ https://zhuanlan.zhihu.com/p/139383690（GDAL）
 
 ### 资料
 obia的过去，现在，未来：https://www.mdpi.com/2072-4292/12/12/2012  
-AnIntroduction to Convolutional Neural Networks: https://arxiv.org/pdf/1511.08458  
+An Introduction to Convolutional Neural Networks: https://arxiv.org/pdf/1511.08458  
 卷积神经网络是如何工作的？: https://e2eml.school/how_convolutional_neural_networks_work.html  
 斯坦福CNN：https://cs231n.github.io/convolutional-networks/  
 
