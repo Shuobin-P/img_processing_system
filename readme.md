@@ -80,6 +80,7 @@ obia的过去，现在，未来：https://www.mdpi.com/2072-4292/12/12/2012
 An Introduction to Convolutional Neural Networks: https://arxiv.org/pdf/1511.08458  
 卷积神经网络是如何工作的？: https://e2eml.school/how_convolutional_neural_networks_work.html  
 斯坦福CNN：https://cs231n.github.io/convolutional-networks/  
+构建第一个ANN：https://machinelearningmastery.com/develop-your-first-neural-network-with-pytorch-step-by-step/
 
 ### 问题
 #### 根据图像的颜色不就可以分类吗？有那么多属性需要考虑吗？
