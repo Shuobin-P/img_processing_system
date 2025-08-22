@@ -81,7 +81,7 @@ An Introduction to Convolutional Neural Networks: https://arxiv.org/pdf/1511.084
 卷积神经网络是如何工作的？: https://e2eml.school/how_convolutional_neural_networks_work.html  
 斯坦福CNN：https://cs231n.github.io/convolutional-networks/  
 构建第一个ANN：https://machinelearningmastery.com/develop-your-first-neural-network-with-pytorch-step-by-step/
-
+Building a Multiclass Classification Model in PyTorch：https://machinelearningmastery.com/building-a-multiclass-classification-model-in-pytorch/
 ### 问题
 #### 根据图像的颜色不就可以分类吗？有那么多属性需要考虑吗？
 答：足球场上的假草皮，和绿化带中的草丛都是绿色，你能根据颜色就把它们分为同一个类吗？
