@@ -94,6 +94,9 @@ def process_segment(args):
 
 # 从标点(已分类)的.shp文件中获得对应segment的特征和分类
 def get_shapefile_objects_features_and_labels(base_img_ds, shp_fn, all_obj_features, segment_ids, segments):
+    """
+        all_obj_features: 所有segment的特征, 比如: 光谱特征
+    """
     ogr_ds = ogr.Open(shp_fn)
     lyr = ogr_ds.GetLayer()
     driver = gdal.GetDriverByName('MEM')
