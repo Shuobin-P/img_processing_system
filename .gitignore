@@ -60,6 +60,7 @@ Thumbs.db
 # Remote Sensing Image Data
 osgeopy-data
 qgis_image
+classification/cnn/data
 
 # Other big image Data
 practice/pytorch/data/cifar10
