@@ -1,9 +1,9 @@
 # TODO 没有用到GPU
-# https://youtu.be/jvZm8REF2KY
+# 视频地址：https://youtu.be/jvZm8REF2KY
 """
 Explanation of using RGB masks: https://youtu.be/sGAwx4GMe4E
 
-https://www.kaggle.com/humansintheloop/semantic-segmentation-of-aerial-imagery
+Dataset Source: https://www.kaggle.com/humansintheloop/semantic-segmentation-of-aerial-imagery
 
 The dataset consists of aerial imagery of Dubai obtained by MBRSC satellites and annotated with pixel-wise semantic segmentation in 6 classes. The total volume of the dataset is 72 images grouped into 6 larger tiles. The classes are:
 
@@ -37,7 +37,6 @@ from patchify import patchify
 from PIL import Image
 os.environ['SM_FRAMEWORK'] = 'tf.keras'
 import segmentation_models as sm
-from tensorflow.keras.metrics import MeanIoU
 
 from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
