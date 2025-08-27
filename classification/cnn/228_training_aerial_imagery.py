@@ -1,4 +1,7 @@
-# TODO 没有用到GPU
+# TODO 没用GPU，模型训练很慢，epoches改成5，方便检查代码是否有问题.
+# 问题：这个代码是否满足老师的要求？
+# 答：使用U-Net进行分类，但是代码中还有一些东西没弄清楚。比如：训练模型之前除了对数据要进行预处理，还要做什么，对U-Net不是很熟。
+
 # 视频地址：https://youtu.be/jvZm8REF2KY
 """
 Explanation of using RGB masks: https://youtu.be/sGAwx4GMe4E
@@ -269,14 +272,27 @@ model = get_model()
 model.compile(optimizer='adam', loss=total_loss, metrics=metrics)
 #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=metrics)
 model.summary()
-
 print("model is fitting....")
 history1 = model.fit(X_train, y_train, 
                     batch_size = 16, 
                     verbose=1, 
-                    epochs=100, 
+                    epochs=5, # FIXME 将epochs设为5，方便验证后续代码是否有问题。原本应为100
                     validation_data=(X_test, y_test), 
                     shuffle=False)
+
+model.save('./classification/cnn/models/satellite_standard_unet_5epochs.hdf5')
+
+import pickle
+file_path = './classification/cnn/pkl/history1.pkl'
+# 保存history1
+with open(file_path, 'wb') as file: # 注意是 'wb' (write binary)
+    pickle.dump(history1, file)
+"""
+# 加载history1
+with open(file_path, 'rb') as file: # 注意是 'rb' (read binary)
+    history1 = pickle.load(file)
+"""
+
 
 #Minmaxscaler
 #With weights...[0.1666, 0.1666, 0.1666, 0.1666, 0.1666, 0.1666]   in Dice loss
@@ -294,9 +310,11 @@ history1 = model.fit(X_train, y_train,
 #Using categorical crossentropy as loss: 0.677
 
 #model.save('models/satellite_standard_unet_100epochs_7May2021.hdf5')
+
 ############################################################
 #TRY ANOTHE MODEL - WITH PRETRINED WEIGHTS
 #Resnet backbone
+"""
 BACKBONE = 'resnet34'
 preprocess_input = sm.get_preprocessing(BACKBONE)
 
@@ -320,6 +338,7 @@ history2=model_resnet_backbone.fit(X_train_prepr,
           epochs=100,
           verbose=1,
           validation_data=(X_test_prepr, y_test))
+"""
 
 #Minmaxscaler
 #With weights...[0.1666, 0.1666, 0.1666, 0.1666, 0.1666, 0.1666]   in Dice loss
@@ -361,10 +380,13 @@ plt.show()
 
 ##################################
 from keras.models import load_model
-model = load_model("models/satellite_standard_unet_100epochs.hdf5",
+model = load_model("./classification/cnn/models/satellite_standard_unet_5epochs.hdf5", compile=False)
+print("model is loaded...")
+"""
+model = load_model("./models/satellite_standard_unet_100epochs.hdf5",  # 如果加载一个已训练好的模型对数据进行预测，那么设置compile=False，不需要custom_objects参数。如果加载一个pretrained模型，从而继续训练过程，并且使用了自定义loss function和metrics ，就需要custom_objects参数。
                    custom_objects={'dice_loss_plus_2focal_loss': total_loss,
                                    'jacard_coef':jacard_coef})
-
+"""
 #IOU
 y_pred=model.predict(X_test)
 y_pred_argmax=np.argmax(y_pred, axis=3)
