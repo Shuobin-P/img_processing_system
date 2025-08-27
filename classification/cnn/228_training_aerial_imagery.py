@@ -2,6 +2,8 @@
 # 问题：这个代码是否满足老师的要求？
 # 答：使用U-Net进行分类，但是代码中还有一些东西没弄清楚。比如：训练模型之前除了对数据要进行预处理，还要做什么，对U-Net不是很熟。
 
+# 问题：使用Pytorch进行改写？
+# 答：这个教程中的代码都没完全弄明白。
 # 视频地址：https://youtu.be/jvZm8REF2KY
 """
 Explanation of using RGB masks: https://youtu.be/sGAwx4GMe4E
