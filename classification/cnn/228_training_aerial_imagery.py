@@ -272,7 +272,6 @@ metrics=['accuracy', jacard_coef]
 
 def get_model():
     return multi_unet_model(n_classes=n_classes, IMG_HEIGHT=IMG_HEIGHT, IMG_WIDTH=IMG_WIDTH, IMG_CHANNELS=IMG_CHANNELS)
-
 model = get_model()
 model.compile(optimizer='adam', loss=total_loss, metrics=metrics)
 #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=metrics)
@@ -286,7 +285,6 @@ history1 = model.fit(X_train, y_train,
                     shuffle=False)
 
 model.save('./classification/cnn/models/satellite_standard_unet_5epochs.hdf5')
-
 import pickle
 file_path = './classification/cnn/pkl/history1.pkl'
 # 保存history1
@@ -297,7 +295,6 @@ with open(file_path, 'wb') as file: # 注意是 'wb' (write binary)
 with open(file_path, 'rb') as file: # 注意是 'rb' (read binary)
     history1 = pickle.load(file)
 """
-
 
 #Minmaxscaler
 #With weights...[0.1666, 0.1666, 0.1666, 0.1666, 0.1666, 0.1666]   in Dice loss
@@ -414,7 +411,8 @@ test_img = X_test[test_img_number]
 ground_truth=y_test_argmax[test_img_number]
 #test_img_norm=test_img[:,:,0][:,:,None]
 test_img_input=np.expand_dims(test_img, 0)
-prediction = (model.predict(test_img_input))
+prediction = (model.predict(test_img_input)) # prediction的取值，例如：像0.11092351 0.40856606的小数
+print(prediction)
 predicted_img=np.argmax(prediction, axis=3)[0,:,:]
 
 
