@@ -82,10 +82,10 @@ An Introduction to Convolutional Neural Networks: https://arxiv.org/pdf/1511.084
 卷积神经网络是如何工作的？: https://e2eml.school/how_convolutional_neural_networks_work.html  
 斯坦福CNN：https://cs231n.github.io/convolutional-networks/  
 构建第一个ANN：https://machinelearningmastery.com/develop-your-first-neural-network-with-pytorch-step-by-step/  
-Building a Multiclass Classification Model in PyTorch：https://machinelearningmastery.com/building-a-multiclass-classification-model-in-pytorch/  
-构建一个卷积神经网络：https://machinelearningmastery.com/building-a-convolutional-neural-network-in-pytorch/
-Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery Using Python（没提供对应的遥感影像）：https://medium.com/geekculture/remote-sensing-deep-learning-for-land-cover-classification-of-satellite-imagery-using-python-6a7b4c4f570f  
-Deep Learning for Satellite Image Classification with Python（数据集好像是一张图片对应一种landcover）：https://medium.com/@northamericangeoscientistsorg/deep-learning-for-satellite-image-classification-with-python-ceff1cdf41fb
+Building a Multiclass Classification Model in PyTorch：https://machinelearningmastery.com/  building-a-multiclass-classification-model-in-pytorch/  
+构建一个卷积神经网络：https://machinelearningmastery.com/building-a-convolutional-neural-network-in-pytorch/  
+Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery Using Python（没提供对应的遥感影像）：https://medium.com/geekculture/  remote-sensing-deep-learning-for-land-cover-classification-of-satellite-imagery-using-python-6a7b4c4f570f  
+
 
 ### 问题
 #### 根据图像的颜色不就可以分类吗？有那么多属性需要考虑吗？
