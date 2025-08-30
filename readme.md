@@ -63,7 +63,7 @@ https://zhuanlan.zhihu.com/p/139383690（GDAL）
 主成分分析（PCA）：压缩数据并突出主要信息。  
 光谱混合分析：分解像元的混合光谱成纯像元分量。
 
-## 5. 分类和地物识别
+## 5. 分类和地物识别 √
 
 根据图像的光谱特征和其他属性，将像元归类：  
 
@@ -103,3 +103,7 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 比值法：计算两个时间点的波段比值。  
 
 分类后比较法：对两期影像分别分类后进行对比。  
+
+### 资料
+[Change Detection Methods for Remote Sensing in the Last Decade: A Comprehensive Review](https://www.mdpi.com/2072-4292/16/13/2355)  
+已实现一些算法的库：https://github.com/ChenHongruixuan/ChangeDetectionRepository
