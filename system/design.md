@@ -5,7 +5,7 @@ B/S：
 C/S:
     没做过C/S架构的软件。
 
-
+# 操作逻辑
 数据预处理：
     影像拼接：
         上传tif图像 -> 拼接图像 -> 返回拼接后的图像
@@ -18,4 +18,3 @@ C/S:
             选择RESAMPLING TO SMALLER PIXELS还是RESAMPLING TO LARGER PIXELS -> 上传tif图像 -> 返回结果
 
 分类和地物识别：
-    
