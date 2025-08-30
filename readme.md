@@ -92,7 +92,7 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 答：足球场上的假草皮，和绿化带中的草丛都是绿色，你能根据颜色就把它们分为同一个类吗？
 
 #### “利用卷积神经网络（CNN）等模型进行自动分类”中自动啥意思？
-答：即不需要手工选取特征，而是CNN自动提取特征。
+答：即不需要手工选取特征，而是CNN自动提取特征。 
 
 
 ## 6. 变化检测
