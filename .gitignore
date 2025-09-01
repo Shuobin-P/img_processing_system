@@ -61,6 +61,7 @@ Thumbs.db
 osgeopy-data
 qgis_image
 classification/cnn/data
+change_detection/imgs
 
 # Other big image Data
 practice/pytorch/data/cifar10
