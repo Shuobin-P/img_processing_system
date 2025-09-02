@@ -104,9 +104,16 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 
 分类后比较法：对两期影像分别分类后进行对比。  
 
+### 问题
+通过差值法和比值法得到的图，是否需要需要进一步处理，比如：分析地表变化？
+
+
 ### 资料
 [Change Detection Methods for Remote Sensing in the Last Decade: A Comprehensive Review](https://www.mdpi.com/2072-4292/16/13/2355)  
 已实现一些算法的库：https://github.com/ChenHongruixuan/ChangeDetectionRepository  
 [NASA ARSET: Introduction to Change Detection, Session 1/2](https://youtu.be/du0fPyiZrpk?si=X4OuQr6fvk1_07pK)
 
-简单的变化检测框架：https://github.com/walking-shadow/Simple-Remote-Sensing-Change-Detection-Framework
+简单的变化检测框架：https://github.com/walking-shadow/Simple-Remote-Sensing-Change-Detection-Framework  
+
+华南师范《遥感应用综合实习》：
+https://statics.scnu.edu.cn/pics/geoinfolab/2019/0405/1554462819135507.pdf  
