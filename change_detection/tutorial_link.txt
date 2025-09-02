@@ -1,3 +1,0 @@
-Change Detection In Remote Sensing：https://pdfcentro.com/book/change-detection-in-remote-sensing-4971452
-
-简单的变化检测框架：https://github.com/walking-shadow/Simple-Remote-Sensing-Change-Detection-Framework

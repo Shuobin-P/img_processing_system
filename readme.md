@@ -108,3 +108,5 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 [Change Detection Methods for Remote Sensing in the Last Decade: A Comprehensive Review](https://www.mdpi.com/2072-4292/16/13/2355)  
 已实现一些算法的库：https://github.com/ChenHongruixuan/ChangeDetectionRepository  
 [NASA ARSET: Introduction to Change Detection, Session 1/2](https://youtu.be/du0fPyiZrpk?si=X4OuQr6fvk1_07pK)
+
+简单的变化检测框架：https://github.com/walking-shadow/Simple-Remote-Sensing-Change-Detection-Framework
