@@ -105,7 +105,7 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 分类后比较法：对两期影像分别分类后进行对比。  
 
 ### 问题
-通过差值法和比值法得到的图，是否需要需要进一步处理，比如：分析地表变化？
+通过差值法和比值法得到的图，是否需要需要进一步处理，比如：“分析地表变化”需要做到什么程度？变化是否需要量化？
 
 
 ### 资料
