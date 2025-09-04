@@ -1,9 +1,22 @@
+# 架构选择
 系统架构：B/S or C/S ?
 
 B/S：
-    Browser展示数据，Server: 提供数据
+    Browser展示数据，Server: 处理与提供数据
+
 C/S:
     没做过C/S架构的软件。
+
+注：现在只是要你把系统做出来，不要求这个系统做得多好，B/S架构能做，就用B/S架构。
+
+技术栈选择：
+    前端：
+        Streamlit: A faster way to build and share data apps. 
+                    Turn your data scripts into shareable web apps in minutes. All in pure Python. No front‑end experience required.
+                    案例：https://streamlit.io/playground?example=computer_vision
+        Gradio:
+        Dash: 
+
 
 # 操作逻辑
 数据预处理：
