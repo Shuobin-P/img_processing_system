@@ -14,9 +14,22 @@ C/S:
         Streamlit: A faster way to build and share data apps. 
                     Turn your data scripts into shareable web apps in minutes. All in pure Python. No front‑end experience required.
                     案例：https://streamlit.io/playground?example=computer_vision
-        Gradio:
-        Dash: 
+                Github star: 41.2k
+                特点：
+                    开发快
+                    纯python，不需要前端经验
 
+        Gradio:
+                Gradio is the fastest way to demo your machine learning model with a friendly web interface so that anyone can use it, anywhere!
+
+                Github star: 39.7k
+                特点：
+                    快速实现通过web界面展示你的机器学习模型
+
+        Dash: 
+                Dash is the most downloaded, trusted Python framework for building ML & data science web apps.
+                
+                Github star: 24k
 
 # 操作逻辑
 数据预处理：

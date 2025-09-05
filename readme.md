@@ -105,6 +105,8 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 分类后比较法：对两期影像分别分类后进行对比。  
 
 ### 问题
+问题：你在做光谱指数差值时，用到的图像的像素值取值为[0, 255]，而不是浮点数。TODO
+
 问题：通过差值法和比值法得到的图，是否需要需要进一步处理？  
 答：需要用阈值将区域划分为变化，无变化。  
 
