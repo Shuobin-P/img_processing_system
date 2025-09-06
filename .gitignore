@@ -69,3 +69,6 @@ practice/pytorch/data/cifar10
 # model
 classification/cnn/models/my_228_training_aerial_imagery_model.pth
 change_detection/models
+
+# tmp directory
+tmp

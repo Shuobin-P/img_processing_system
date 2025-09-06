@@ -18,13 +18,17 @@ C/S:
                 特点：
                     开发快
                     纯python，不需要前端经验
+                问题：
+                    都是全新的东西，要从头开始学。但是HTML,CSS,Javascript之前已经学过了。而且ChatGPT也很熟，开发会更快。
+                    要学VUE！？企业级应用框架，Streamlit的学习成本更小，而且还是纯Python
 
         Gradio:
-                Gradio is the fastest way to demo your machine learning model with a friendly web interface so that anyone can use it, anywhere!
+                Gradio is an open-source Python package that allows you to quickly build a demo or web application for your machine learning model, API, or any arbitrary Python function
 
                 Github star: 39.7k
-                特点：
+                优点：
                     快速实现通过web界面展示你的机器学习模型
+                    No JavaScript, CSS, or web hosting experience needed!
 
         Dash: 
                 Dash is the most downloaded, trusted Python framework for building ML & data science web apps.
