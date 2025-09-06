@@ -235,7 +235,7 @@ if __name__ == '__main__':
             train_img[train_img == segment_id] = class_label # class_label min= 40152 ,max=40158
 
     train_img[train_img <= threshold] = 0 # TODO 不理解 train_img <= threshold 存在吗？
-    train_img[train_img > threshold] -= threshold # FIXME train_img赋值完，后面的代码就没用过了。
+    train_img[train_img > threshold] -= threshold # train_img赋值完，后面的代码就没用过了。
     training_objects = []
     training_labels = []
     for klass in classes:

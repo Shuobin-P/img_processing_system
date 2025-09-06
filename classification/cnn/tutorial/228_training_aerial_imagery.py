@@ -1,12 +1,4 @@
-# TODO 没用GPU，模型训练很慢，epoches改成5，方便检查代码是否有问题.
-# 问题：这个代码是否满足老师的要求？
-# 答：
-# 1.使用了自定义的U-Net进行分类，但是代码中还有一些东西没弄清楚。比如：训练模型之前除了对数据要进行预处理，还要做什么？
-# 2.不会自己构建U-Net，但是有一些库实现了U-Net，比如：segmentation_models_pytorch和segmentation_models。
-# 3.不会使用U-Net，学会用U-Net完成这个教程的分类任务，即使模型的表现一般。对于
-
-# 问题：使用Pytorch进行改写？
-# 答：这个教程中的代码都没完全弄明白。
+# 没用GPU，模型训练很慢，epoches改成5，方便检查代码是否有问题.
 # 视频地址：https://youtu.be/jvZm8REF2KY
 """
 Explanation of using RGB masks: https://youtu.be/sGAwx4GMe4E
@@ -280,7 +272,7 @@ print("model is fitting....")
 history1 = model.fit(X_train, y_train, 
                     batch_size = 16, 
                     verbose=1, 
-                    epochs=5, # FIXME 将epochs设为5，方便验证后续代码是否有问题。原本应为100
+                    epochs=5, # 将epochs设为5，方便验证后续代码是否有问题。原本为100
                     validation_data=(X_test, y_test), 
                     shuffle=False)
 
