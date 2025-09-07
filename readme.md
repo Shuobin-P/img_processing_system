@@ -99,7 +99,7 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 答：即不需要手工选取特征，而是CNN自动提取特征。 
 
 
-## 6. 变化检测
+## 6. 变化检测 √
 通过比较不同时间的遥感图像，分析地表变化：  
 
 差值法：计算波段差值或光谱指数差值。  
