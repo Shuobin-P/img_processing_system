@@ -18,16 +18,23 @@ https://etcnew.sdut.edu.cn/meol/common/script/preview/download_preview.jsp?filei
 这是遥感图像处理的第一步，确保数据质量和一致性。包括：  
 
 ### 影像拼接（镶嵌）：将多幅图像拼接成完整的覆盖区域。  
-教程：
-《Geoprocessing with Python》 第213页  
-https://pygis.io/docs/f_rs_mosaic.html  问题：用到的geowombat比较小众，github上只有188个star。  
-https://blog.csdn.net/m0_51301348/article/details/124460560（GDAL,raster）  
-https://www.cnblogs.com/RSran/p/17776513.html(GDAL)  
-https://juejin.cn/post/6892002048214138894（rasterio和GDAL）  
-https://zhuanlan.zhihu.com/p/139383690（GDAL）
 
 ### 裁剪与重采样：根据研究区域裁剪图像或对分辨率进行调整。
-问题：如何用代码实现不规则裁剪（任意多边形）？
+
+### 技术选择：GDAL。  
+原因：有基金会和社区支持，开发了25年的时间。github上已有5.4k star。
+
+### 问题
+如何用代码实现不规则裁剪（任意多边形）？
+
+### 资料
+影像拼接教程：
+    《Geoprocessing with Python》 第213页  
+    https://pygis.io/docs/f_rs_mosaic.html  问题：用到的geowombat比较小众，github上只有188个star。  
+    https://blog.csdn.net/m0_51301348/article/details/124460560（GDAL,raster）  
+    https://www.cnblogs.com/RSran/p/17776513.html(GDAL)  
+    https://juejin.cn/post/6892002048214138894（rasterio和GDAL）  
+    https://zhuanlan.zhihu.com/p/139383690（GDAL）
 
 裁剪教程（用的技术：GDAL）：
     https://zhuanlan.zhihu.com/p/397149374  
@@ -38,9 +45,6 @@ https://zhuanlan.zhihu.com/p/139383690（GDAL）
     https://blog.csdn.net/zhanglingfeng1/article/details/129227390  
     https://www.cnblogs.com/tangjielin/p/16599414.html  
     https://zhuanlan.zhihu.com/p/587583231
-
-### 技术选择：GDAL。  
-原因：有基金会和社区支持，开发了25年的时间。github上已有5.4k star。
 
 ## 2. 图像增强（可不做）
 为了突出图像的某些特征，常用以下方法：  
@@ -110,12 +114,17 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 答：需要用阈值将区域划分为变化，无变化。  
 
 问题：阈值如何确定？  TODO  
-不是重点。
+如果上传的图片不一样，阈值也是不一样的，你的写死了。
 答：根据目前查找的资料来看，没有统一的方法。  
+
 思路1： Otsu: 将图片中的对象与背景分离开，前提：对象与背景在直方图中对应两个顶峰。与此处研究的问题无关。
 
-思路2：
+思路2：目测，然后手动确定。
+
+思路3：
     总体思路：在差值图像上选定一个包含变化像素的训练区域, 找到一个阈值, 使得变化检测精度最高。把该阈值应用到整幅图像上,也可以使得变化检测精度达到最大。
+
+    那么必须得到该训练区域的实际变化情况，才能计算取某个阈值时，知道它的变化检测精度最高。
 
     具体实现：计算差值图中某个区域所有像素点的绝对值，这些值作为阈值，然后从小到大排列，逐个取值，然后计算每个阈值的变化检测精度。最后，取变化检测精度最好的阈值作为整幅图像的阈值。
 
