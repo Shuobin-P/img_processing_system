@@ -17,7 +17,7 @@ def get_subset_tif(work_dir, src_tif_fn, offset_x, offset_y, win_xsize, win_ysiz
     src_file = src_tif_fn
     src_file_ds = gdal.Open(src_file)
     gtiff_driver = gdal.GetDriverByName('GTiff') 
-    res_ds = gtiff_driver.Create(res_tif_fn, win_xsize, win_ysize, bands = src_file_ds.RasterCount, eType=src_file_ds.GetRasterBand(1).DataType)
+    res_ds = gtiff_driver.Create(res_tif_fn, win_xsize, win_ysize, bands = src_file_ds.RasterCount, eType=src_file_ds.GetRasterBand(1).DataType,  options=["ALPHA=NO"])
     res_ds.SetProjection(src_file_ds.GetProjection()) 
     gt = src_file_ds.GetGeoTransform()
     new_gt = ( # 计算得到res_tif_fn左上角的坐标

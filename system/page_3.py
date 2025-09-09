@@ -1,4 +1,3 @@
-# FIXME 新图原图的颜色不对!!! 甚至同一张图片直接原封不动写过去，颜色都变了。见Page4
 import streamlit as st
 from osgeo import gdal
 import tempfile
@@ -27,7 +26,7 @@ if resampling_to_smaller_pixels_source_img is not None:
     gtiff_driver = gdal.GetDriverByName('GTiff') 
     
     # Create output dataset
-    out_ds = gtiff_driver.Create(res_img_path, out_columns, out_rows, bands=in_ds.RasterCount)
+    out_ds = gtiff_driver.Create(res_img_path, out_columns, out_rows, bands=in_ds.RasterCount, eType=in_ds.GetRasterBand(1).DataType, options=["ALPHA=NO"])
     out_ds.SetProjection(in_ds.GetProjection()) 
 
     # Edit the geotransform so pixels are one-quarter previous size
