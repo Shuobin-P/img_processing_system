@@ -1,7 +1,3 @@
-"""
-测试数据：
-    D:\Projects\VsCode\Python\img_processing_system\osgeopy-data\Massachusetts 中以O开头的所有tif文件
-"""
 import streamlit as st
 from osgeo import gdal
 import tempfile
@@ -18,7 +14,7 @@ def get_extent(fn):
     del ds
     return (gt[0], gt[3], gt[0] + gt[1] * ds_raster_x_size, gt[3] + gt[5] * ds_raster_y_size)
 
-st.title("遥感影像拼接") 
+st.markdown("## 遥感影像拼接") 
 
 # 1. 上传文件
 uploaded_files = st.file_uploader(

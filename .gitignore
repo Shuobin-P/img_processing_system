@@ -65,6 +65,7 @@ change_detection/imgs
 
 # Other big image Data
 practice/pytorch/data/cifar10
+system_test_dataset
 
 # model
 classification/cnn/models/my_228_training_aerial_imagery_model.pth
