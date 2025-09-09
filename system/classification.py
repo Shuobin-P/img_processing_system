@@ -6,8 +6,8 @@ st.title("分类与地物识别")
 
 st.markdown("# 监督分类")
 
-uploaded_files = st.file_uploader(
-    "帆帆帆帆", accept_multiple_files=False, type="csv"
+uploaded_img = st.file_uploader(
+    "请上传你要分类的图像", accept_multiple_files=False, type=["tif", "tiff"]
 )
 
 

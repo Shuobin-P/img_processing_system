@@ -69,6 +69,7 @@ system_test_dataset
 
 # model
 classification/cnn/models/my_228_training_aerial_imagery_model.pth
+classification/supervised_classification/pkl
 change_detection/models
 
 # tmp directory
