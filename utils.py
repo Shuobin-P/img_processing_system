@@ -1,7 +1,6 @@
 from osgeo import gdal
 import os
 
-
 # 通过指定矩形框来裁剪图像
 def get_subset_tif(work_dir, src_tif_fn, offset_x, offset_y, win_xsize, win_ysize, res_tif_fn) -> None:
     """
@@ -42,3 +41,4 @@ def get_subset_tif(work_dir, src_tif_fn, offset_x, offset_y, win_xsize, win_ysiz
         dst_band.SetStatistics(min_val, max_val, 0, 0)
 
     del res_ds, src_file_ds
+

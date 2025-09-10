@@ -1,5 +1,7 @@
 """
 设计思路：通过考虑形状, 纹理, 从而优化只考虑光谱特征的obia_v1.py
+具体实现：
+    将待分类的目标图片naip_fn分为若干segment，并且在qgis上为手动目标图片naip_fn手动标记land cover type，得到truth_data_subset_utm12.shp；然后将truth_data_subset_utm12.shp中的点分为训练集和测试集，然后获得测试集中的点对应的segement的特征和标签
 模型运行结果：
     混淆矩阵预测准确率：
         考虑光谱,纹理模型:（contrast, dissimilarity, homogeneity, energy），形状（长宽比）：[1.  0.92857143  0.4   0.5    0.7   0.72727273  0.875 ]
@@ -149,8 +151,8 @@ def get_shapefile_objects_features_and_labels(base_img_ds, shp_fn, all_obj_featu
 # ------------------ Main ------------------#
 if __name__ == '__main__':
     # Load image
-    # naip_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\m_4211161_se_12_1_20160624\m_4211161_se_12_1_20160624.tif'
-    naip_fn = r"D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\m_4211161_se_12_1_20160624\m_4211161_se_12_1_20160624_subset.tif"
+    # naip_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\m_4211161_se_12_1_20160624\m_4211161_se_12_1_20160624.tif' 
+    naip_fn = r"D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\m_4211161_se_12_1_20160624\m_4211161_se_12_1_20160624_subset.tif" # 用m_4211161_se_12_1_20160624.tif的一部分是为了减小问题规模
     driverTiff = gdal.GetDriverByName('GTiff')
     naip_ds = gdal.Open(naip_fn)
     assert naip_ds, "naip_ds is None"
@@ -163,7 +165,9 @@ if __name__ == '__main__':
     band_data = np.dstack(band_data)
 
     # Scale image values to 0.0 - 1.0
+    print("band_data.shape= ",band_data.shape)
     img = exposure.rescale_intensity(band_data)
+    print("img shape =", img.shape)
     # Segmentation
     # segments = slic(img, n_segments=500000, compactness=0.1)
     """
@@ -176,7 +180,9 @@ if __name__ == '__main__':
     """
     # 取出 segments
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segments_v2.pkl", "rb") as f:
-        segments = pickle.load(f)
+        segments = pickle.load(f) # segments是一个和img相同shape的矩阵，每个值表示img中每个像素点的segment ID
+    print("segments.shape= ", segments.shape)
+
     # Save segments raster (optional)
     segments_fn = r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\segments_final_v2.tif'
 
@@ -223,6 +229,7 @@ if __name__ == '__main__':
         results = list(executor.map(process_segment, args_list, timeout=3600))
     print(f"Feature extraction done in {time.time() - start_time:.2f} seconds")
     print(results)
+
     # ------------------ Step 6: Cleanup ------------------
     object_ids, objects = zip(*results) # object_ids的元素是segment_id，objects的元素是一个segment的光谱特征
     print(objects)
@@ -239,9 +246,10 @@ if __name__ == '__main__':
     """
     # 加载已有的object_ids, objects
     with open("D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\segment_features_v2.pkl", "rb") as f:
-        object_ids, objects = pickle.load(f)
+        object_ids, objects = pickle.load(f) # segmentID和该segment的特征
     # read shapefile to geopandas geodataframe
-    gdf = gpd.read_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\truth_data_subset_utm12\truth_data_subset_utm12.shp')
+    gdf = gpd.read_file(r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\truth_data_subset_utm12\truth_data_subset_utm12.shp') # 在QGIS上给naip_fn手动标记的点以及对应的land cover type
+    print("gdf= ", gdf)
     # get names of land cover classes/labels
     class_names = gdf['lctype'].unique()
     print('class names', class_names)
@@ -275,7 +283,7 @@ if __name__ == '__main__':
     training_objects, training_labels = get_shapefile_objects_features_and_labels(naip_ds, r'D:\Projects\VsCode\Python\img_processing_system\qgis_image\naip\train.shp',objects, segment_ids, segments)
 
     classifier = RandomForestClassifier(n_jobs=-1, random_state=0)
-    classifier.fit(training_objects, training_labels) # training_objects是从objects得到的。
+    classifier.fit(training_objects, training_labels) # training_objects是从objects得到的。training_objects是特征
     print('Fitting Random Forest Classifier')
     predicted = classifier.predict(objects) # objects是从所有segments计算得到。前面用objects部分数据进行训练，这里用该模型预测所有的objects。这种做法如果只是为了生成最终分类图，则没有问题；但后续如果评估模型，就必须去除训练集，只预测模型没见过的测试集
     print('Predicting Classifications')
@@ -311,11 +319,11 @@ if __name__ == '__main__':
 
     # 加载clf
     with open(r"D:\Projects\VsCode\Python\img_processing_system\classification\supervised_classification\pkl\obia\clf_v2.pkl", "rb") as f:
-        clf = pickle.load(f)
+        clf = pickle.load(f) # clf是模型对整张图片的预测分类结果
     print('Prediction applied to numpy array')
     mask = np.sum(img, axis=2) # 对每个像素的所有波段求和，结果是一个二维矩阵。mask.shape = (2000, 5834) 2000代表y轴方向，5834代表x轴方向
     mask[mask > 0.0] = 1.0 # mask > 0.0表示该像素点有数据
-    mask[mask == 0.0] = -1.0 # mask==0，表示该像素点没有数据
+    mask[mask == 0.0] = -1.0 # mask == 0，表示该像素点没有数据
     clf = np.multiply(clf, mask) # 不是线代中的矩阵乘法，而是两个矩阵相同位置的两个元素相乘
     clf[clf < 0] = -9999.0
 
