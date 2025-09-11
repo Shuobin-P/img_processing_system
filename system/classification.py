@@ -248,9 +248,4 @@ if uploaded_obia_img is not None:
 
 
 
-
-
-
-
-
 st.markdown("# 深度学习")
