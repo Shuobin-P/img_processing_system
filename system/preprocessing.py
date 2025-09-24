@@ -124,7 +124,8 @@ if uploaded_to_subset_file is not None:
 
 st.markdown("## 重采样")
 st.markdown("### 重采样到更高分辨率")
-
+# 问题：为什么重采样得到的结果图片和原图是一样的，即从视觉上看两张图片没有任何区别。
+# 答：一个像素点分成四个具有相同像素值的像素点，所以看不出来区别，但实际上结果图的分辨率是原图的4倍。
 resampling_to_smaller_pixels_source_img= st.file_uploader("请上传你要重采样的图像",  type=["tif", "tiff"], accept_multiple_files=False)
 
 if resampling_to_smaller_pixels_source_img is not None:
@@ -200,7 +201,7 @@ if resampling_to_larger_pixels_source_img is not None:
     print("res_img_path= ", res_img_path)
 
     # Get number of output rows and columns
-    out_rows = round(in_ds.GetRasterBand(1).YSize / 2) # 新图的行数是原图的两倍
+    out_rows = round(in_ds.GetRasterBand(1).YSize / 2) # 新图的行数是原图的一半
     out_columns = round(in_ds.GetRasterBand(1).XSize / 2)
     gtiff_driver = gdal.GetDriverByName('GTiff') 
     
