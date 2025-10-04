@@ -246,6 +246,17 @@ if uploaded_obia_img is not None:
         )
 
 
-
-
 st.markdown("# 深度学习")
+st.info("""
+💡 **注意：** 若输入图像的长度和宽度不是256的倍数，那么分类结果会出现图片边缘的类别出现缺失的情况
+""")
+uploaded_cnn_img = st.file_uploader(
+    "请上传要使用UNet进行分类的图像", accept_multiple_files=False, type=["tif", "tiff"]
+)
+source_file_path = None
+if uploaded_cnn_img is not None:
+    # 保存用户上传的图像
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".tif", dir=custom_temp_dir) as tmp1:
+        tmp1.write(uploaded_cnn_img.getbuffer())
+        source_file_path = tmp1.name
+    # TODO 加载模型，将source_file_path分成若干小块后输入U-Net模型，然后拼接所有小块的分类结果返回给用户
