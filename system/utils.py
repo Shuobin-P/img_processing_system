@@ -54,3 +54,9 @@ def process_segment(args):
     existing_segments.close()
 
     return (segment_id, object_features)
+
+def extract_patches_from_img(img_path, size):
+    """
+    将img分成size x size的若干小块
+    """
+    pass
