@@ -12,7 +12,7 @@ https://www.bilibili.com/video/av1306278684?t=1877.8
 https://etcnew.sdut.edu.cn/meol/common/script/preview/download_preview.jsp?fileid=3654454&resid=787291&lid=48026&preview=preview
 
 
-遥感图像处理的基本操作包括一系列预处理、增强、分析和分类等步骤，具体如下（√表示已经开发完成）：
+遥感图像处理的基本操作包括一系列预处理、增强、分析和分类等步骤，具体如下（√表示已经开发完成，在对应文件夹名中可以找到相关代码）：
 
 ## 1. 数据预处理 √
 这是遥感图像处理的第一步，确保数据质量和一致性。包括：  
