@@ -1,16 +1,4 @@
 # 开发了一个遥感图像处理的系统
-主要用书：《Geoprocessing with Python》  
-数字图像处理教程：  
-https://www.bilibili.com/video/BV1j7411i78H?t=19.3&p=4  
-https://www.bilibili.com/video/BV1YA411K7pp?t=49.5&p=8  
-https://www.bilibili.com/video/BV1Kh411X7Qv?t=25.9&p=2  
-https://www.bilibili.com/video/av1306278684?t=1877.8  
-
-遥感数字图像处理教程：https://www.bilibili.com/video/BV1WJ411D7AG?t=195.6
-
-对应教材：
-https://etcnew.sdut.edu.cn/meol/common/script/preview/download_preview.jsp?fileid=3654454&resid=787291&lid=48026&preview=preview
-
 
 遥感图像处理的基本操作包括一系列预处理、增强、分析和分类等步骤，具体如下（√表示已经开发完成，在对应文件夹名中可以找到相关代码）：
 
@@ -135,6 +123,18 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 
 
 ### 资料
+主要用书：《Geoprocessing with Python》  
+数字图像处理教程：  
+https://www.bilibili.com/video/BV1j7411i78H?t=19.3&p=4  
+https://www.bilibili.com/video/BV1YA411K7pp?t=49.5&p=8  
+https://www.bilibili.com/video/BV1Kh411X7Qv?t=25.9&p=2  
+https://www.bilibili.com/video/av1306278684?t=1877.8  
+
+遥感数字图像处理教程：https://www.bilibili.com/video/BV1WJ411D7AG?t=195.6
+
+对应教材：
+https://etcnew.sdut.edu.cn/meol/common/script/preview/download_preview.jsp?fileid=3654454&resid=787291&lid=48026&preview=preview
+
 [Change Detection Methods for Remote Sensing in the Last Decade: A Comprehensive Review](https://www.mdpi.com/2072-4292/16/13/2355)  
 已实现一些算法的库：https://github.com/ChenHongruixuan/ChangeDetectionRepository  
 [NASA ARSET: Introduction to Change Detection, Session 1/2](https://youtu.be/du0fPyiZrpk?si=X4OuQr6fvk1_07pK)
