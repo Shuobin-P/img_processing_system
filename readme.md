@@ -1,4 +1,4 @@
-# 开发一个系统（一般的图像的系统或者遥感图像的系统）
+# 开发了一个遥感图像处理的系统
 主要用书：《Geoprocessing with Python》  
 数字图像处理教程：  
 https://www.bilibili.com/video/BV1j7411i78H?t=19.3&p=4  
@@ -102,11 +102,11 @@ Remote Sensing: Deep Learning for Land Cover Classification of Satellite Imagery
 ## 6. 变化检测 √
 通过比较不同时间的遥感图像，分析地表变化：  
 
-差值法：计算波段差值或光谱指数差值。  
+- 差值法：计算波段差值或光谱指数差值。  
 
-比值法：计算两个时间点的波段比值。  
+- 比值法：计算两个时间点的波段比值。  
 
-分类后比较法：对两期影像分别分类后进行对比。  
+- 分类后比较法：对两期影像分别分类后进行对比。  
 
 ### 问题
 

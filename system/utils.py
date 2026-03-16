@@ -59,4 +59,5 @@ def extract_patches_from_img(img_path, size):
     """
     将img分成size x size的若干小块
     """
+    # TODO
     pass
